@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Matt Basta</title>
+<link type="text/css" rel="stylesheet" href="http://framecdn.serverboy.net/latest.css" />
+</head>
+<body>
+<div id="content">
+	<h1 id="fallback_name">Matt Basta</h1> <!-- Replaced by three.js typefaces font -->
+	<section id="biobox">
+		
+	</section>
+</div>
+<script type="text/javascript" src="three.js"></script>
+<script type="text/javascript" src="detector.js"></script>
+<script type="text/javascript" src="droid_sans_bold.typeface.js"></script>
+<script type="text/javascript">
+<!--
+if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+var viewport, scene, camera, cameraTarget, renderer;
+var name_parent, name_text_geo, name_mesh, name_material, textMaterialFront, textMaterialSide;
+var main_light, timeline_wrapper, origin_sphere, timeline_objects = [], hover_object = null;
+var orbiting_orbs = [];
+
+var mouse = {x: 0, y: 0}, projector;
+
+var rotation = 0, timeline_rotation = 0;
+
+function init() {
+	viewport = document.createElement("div");
+	document.body.appendChild(viewport);
+	
+	scene = new THREE.Scene();
+	scene.fog = new THREE.Fog(0xffffff, 0, 3000);
+	
+	camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 1500);
+	camera.position.set(0, 400, 1000);
+	scene.add(camera);
+	
+	cameraTarget = new THREE.Vector3(0, 330, 0);
+	
+	var dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+	dirLight.position.set(0, 0, 1).normalize();
+	scene.add(dirLight);
+	
+	// Create my name at the bottom of the page.
+	name_material = new THREE.MeshFaceMaterial();
+	textMaterialFront = new THREE.MeshBasicMaterial({color: 0xdddddd});
+	textMaterialSide = new THREE.MeshLambertMaterial({color: 0x666666});
+	name_parent = new THREE.Object3D();
+	name_parent.position.y = 100;
+	scene.add(name_parent);
+	createText();
+	
+	// Create the timeline.
+	origin_sphere = new THREE.Mesh(
+		new THREE.SphereGeometry(10, 15, 6),
+		new THREE.MeshPhongMaterial({color: 0x66ccff})
+	);
+	origin_sphere.matrixAutoUpdate = false;
+	origin_sphere.updateMatrix();
+	timeline_wrapper = new THREE.Object3D();
+	timeline_wrapper.position.y = 100;
+	timeline_wrapper.add(origin_sphere);
+	scene.add(timeline_wrapper);
+	
+	// Create the light that lights the timeline.
+	main_light = new THREE.PointLight( 0xFFFFFF );
+	main_light.position.y = 400;
+	main_light.position.x = 150;
+	main_light.position.z = 50;
+	scene.add(main_light);
+	
+	renderer = new THREE.WebGLRenderer({antialias: true});
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setClearColor(scene.fog.color, 1);
+	
+	viewport.appendChild(renderer.domElement);
+	
+	projector = new THREE.Projector();
+	
+	viewport.addEventListener("mousemove", function(e) {
+		rotation = Math.PI * (e.clientX / window.innerWidth - 0.5) * 0.3;
+		
+		mouse.x = (e.clientX / window.innerWidth * 2) - 1;
+		mouse.y = -(e.clientY / window.innerHeight * 2) + 1;
+		
+		var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+		projector.unprojectVector(vector, camera);
+		
+		var ray = new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize());
+		var intersects = ray.intersectObjects(timeline_objects);
+		if(intersects.length > 0)
+			hover_object = intersects[0].object;
+			//var intersects = ray.intersectObject( plane );
+			//offset.copy(intersects[ 0 ].point).subSelf( plane.position );
+		else
+			hover_object = null;
+		
+	});
+	viewport.addEventListener("mousedown", function(e) {
+		e.preventDefault();
+		// TODO: Handle click if hover_object is not null.
+	});
+	
+}
+
+function createText() {
+	name_text_geo = new THREE.TextGeometry(
+		"matt basta",
+		{size: 20,
+		 height: 20,
+		 curveSegments: 3,
+		 font: "droid sans",
+		 weight: "bold",
+		 style: "normal",
+		 material: 0,
+		 extrudeMaterial: 1}
+	);
+	name_text_geo.materials = [textMaterialFront, textMaterialSide];
+	name_text_geo.computeBoundingBox();
+	name_text_geo.computeVertexNormals();
+	
+	var triangleAreaHeuristics = 0.1 * 1000;
+	for(var i = 0; i < name_text_geo.faces.length; i++) {
+		var face = name_text_geo.faces[i];
+		if(face.materialIndex != 1) continue;
+		for(var j = 0; j < face.vertexNormals.length; j++) {
+			face.vertexNormals[j].z = 0;
+			face.vertexNormals[j].normalize();
+		}
+		var va = name_text_geo.vertices[face.a].position,
+			vb = name_text_geo.vertices[face.b].position,
+			vc = name_text_geo.vertices[face.c].position;
+		var s = THREE.GeometryUtils.triangleArea(va, vb, vc);
+		if(s > triangleAreaHeuristics)
+			for(var j = 0; j < face.vertexNormals.length; j++)
+				face.vertexNormals[j].copy(face.normal);
+	}
+	
+	var centerOffset = -0.5 * (name_text_geo.boundingBox.max.x - name_text_geo.boundingBox.min.x);
+	name_mesh = new THREE.Mesh(name_text_geo, name_material);
+	
+	name_mesh.position.x = -1.7 * (name_text_geo.boundingBox.max.x - name_text_geo.boundingBox.min.x);
+	name_mesh.position.y = 0;
+	name_mesh.position.z = 0;
+	
+	name_mesh.rotation.x = 0;
+	name_mesh.rotation.y = Math.PI * 2;
+	name_parent.add(name_mesh);
+}
+
+function animate() {
+	requestAnimationFrame(animate);
+	render();
+}
+
+function render() {
+	name_parent.rotation.y = rotation;
+	timeline_wrapper.rotation.y = rotation / 3 + timeline_rotation;
+	camera.lookAt(cameraTarget);
+	renderer.clear();
+	renderer.render(scene, camera);
+}
+var timeline_rotator = setInterval(function() {
+	timeline_rotation += 0.002;
+	for(var i = 0; i < orbiting_orbs.length; i++) {
+		var orb = orbiting_orbs[i];
+		orb.rotation.y += orb.rotation_speed;
+	}
+}, 1000 / 60);
+-->
+</script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+<!--
+var page = 0, timeline = [];
+var repos = [];
+var repos_positions = [[0, 0.866], [1, -0.866], [-1, -0.866], [1.154, 0.866], [0, -1.154], [-1.154, 0.866]];
+var orb_material = {
+	"PushEvent": new THREE.MeshLambertMaterial({color: 0x993311}),
+	"CreateEvent": new THREE.MeshLambertMaterial({color: 0x44cc66}),
+	"PullRequestEvent": new THREE.MeshPhongMaterial({color: 0x1133aa})
+};
+function get_next_page() {
+	page++;
+	var last_event = null;
+	if(timeline)
+		last_event = timeline[timeline.length - 1];
+	$.getJSON("https://api.github.com/users/mattbasta/events?page=" + page + "&callback=?", function(response) {
+		for(var i = 0; i < response.data.length; i++) {
+			var event = response.data[i],
+				mesh, radius = 0;
+			var repo = event.repo.name.split("/")[1];
+			var item = {type: event.type,
+						repo: repo,
+						parent: last_event};
+			switch(event.type) {
+				case "PushEvent":
+					radius = 4;
+					mesh = new THREE.Object3D();
+					var orb = new THREE.Mesh(
+						new THREE.SphereGeometry(radius, 20, 15),
+						orb_material[event.type]
+					);
+					mesh.add(orb);
+					for(var j = 0; j < Math.min(event.payload.size, 10); j++) {
+						var commit_orb = new THREE.Mesh(
+							new THREE.SphereGeometry(radius / 2, 6, 7),
+							orb_material[event.type]
+						);
+						commit_orb.position.x = radius + j * 7;
+						var commit_orb_wrap = new THREE.Object3D();
+						commit_orb_wrap.add(commit_orb);
+						commit_orb_wrap.rotation.y = Math.random() * Math.PI * 2;
+						commit_orb_wrap.rotation.z = (Math.random() - 0.5) * 0.2;
+						commit_orb_wrap.rotation_speed = 0.1 / j / j;
+						if(Math.random() > 0.5)
+							commit_orb_wrap.rotation_speed *= -1;
+						orbiting_orbs.push(commit_orb_wrap);
+						mesh.add(commit_orb_wrap);
+					}
+					break;
+				case "CreateEvent":
+					if(last_event != null && last_event.repo == repo && last_event.type == "PullRequestEvent")
+						continue;
+					radius = 5;
+					mesh = new THREE.Mesh(
+						new THREE.SphereGeometry(radius, 20, 15),
+						orb_material[event.type]
+					);
+					break;
+				case "PullRequestEvent":
+					radius = (event.payload.pull_request.additions + event.payload.pull_request.deletions) / 100 + 5;
+					radius = Math.min(radius, 30);
+					mesh = new THREE.Object3D();
+					var orb = new THREE.Mesh(
+						new THREE.SphereGeometry(radius, 20, 15),
+						orb_material[event.type]
+					);
+					mesh.add(orb);
+					for(var j = 0; j < Math.min(event.payload.pull_request.changed_files, 30); j++) {
+						var file_orb = new THREE.Mesh(
+							new THREE.SphereGeometry(2, 6, 7),
+							orb_material[event.type]
+						);
+						file_orb.position.x = radius + 6;
+						var file_orb_wrap = new THREE.Object3D();
+						file_orb_wrap.add(file_orb);
+						file_orb_wrap.rotation.y = Math.random() * Math.PI * 2;
+						file_orb_wrap.rotation.z = (Math.random() - 0.5) * 0.6;
+						file_orb_wrap.rotation_speed = 0.005 * Math.random() + 0.005;
+						orbiting_orbs.push(file_orb_wrap);
+						mesh.add(file_orb_wrap);
+					}
+					break;
+				default:
+					continue;
+			}
+			item.radius = radius;
+			
+			if(repos.indexOf(repo) == -1)
+				repos[repos.length] = repo;
+			
+			if(last_event == null)
+				mesh.position.y = 20;
+			else
+				mesh.position.y = 5 + last_event.orb.position.y + radius + last_event.radius;
+			
+			var rpos = repos_positions[repos.indexOf(repo)];
+			mesh.position.x = rpos[0] * 60 + (Math.random() - 0.5) * 5;
+			mesh.position.z = rpos[1] * 60 + (Math.random() - 0.5) * 5;
+			
+			timeline_objects.push(mesh);
+			item.orb = mesh;
+			timeline[timeline.length] = item;
+			last_event = item;
+			
+			timeline_wrapper.add(mesh);
+		}
+		if(timeline.length < 30)
+			get_next_page();
+	});
+}
+
+if (Detector.webgl) {
+	document.getElementById("fallback_name").style.display = "none";
+	get_next_page();
+	init();
+	animate();
+}
+-->
+</script>
+</body>
+</html>
