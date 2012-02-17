@@ -3,12 +3,18 @@
 <head>
 <title>Matt Basta</title>
 <link type="text/css" rel="stylesheet" href="http://framecdn.serverboy.net/latest.css" />
+<link type="text/css" rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="sans-serif">
 <div id="content">
 	<h1 id="fallback_name">Matt Basta</h1> <!-- Replaced by three.js typefaces font -->
 	<section id="biobox">
-		
+		<p class="overview">Builder of awesome internet things</p>
+		<p class="links">
+			<a href="skype:+15702129663">570-212-9663</a><br />
+			<a href="http://www.linkedin.com/in/mbasta">resum&eacute;</a> &bull; <a href="http://blog.mattbasta.com/">blog</a><br />
+			<a href="https://github.com/mattbasta">all my code</a> &bull; <a href="https://github.com/mattbasta/mattbasta.github.com">code for this page</a>
+		</p>
 	</section>
 </div>
 <script type="text/javascript" src="three.js"></script>
@@ -164,7 +170,7 @@ function render() {
 	renderer.render(scene, camera);
 }
 var timeline_rotator = setInterval(function() {
-	timeline_rotation += 0.002;
+	timeline_rotation += 0.001;
 	for(var i = 0; i < orbiting_orbs.length; i++) {
 		var orb = orbiting_orbs[i];
 		orb.rotation.y += orb.rotation_speed;
@@ -177,12 +183,16 @@ var timeline_rotator = setInterval(function() {
 <!--
 var page = 0, timeline = [];
 var repos = [];
-var repos_positions = [[0, 0.866], [1, -0.866], [-1, -0.866], [1.154, 0.866], [0, -1.154], [-1.154, 0.866]];
+var repos_positions = [[0, 0.866], [1, -0.866], [-1, -0.866], [1.154, 0.866], [0, -1.154], [-1.154, 0.866], [0, 1.72], [2, -1.72], [-2, -1.72]];
 var orb_material = {
 	"PushEvent": new THREE.MeshLambertMaterial({color: 0x993311}),
-	"CreateEvent": new THREE.MeshLambertMaterial({color: 0x44cc66}),
+	"CreateEvent": new THREE.MeshLambertMaterial({color: 0xddd100}),
 	"PullRequestEvent": new THREE.MeshPhongMaterial({color: 0x1133aa})
 };
+var ring_increment = Math.PI / 10;
+var addition_material = new THREE.MeshPhongMaterial({color: 0x168720}),
+	deletion_material = new THREE.MeshPhongMaterial({color: 0xc01913}),
+	ring_material = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1, opacity: 0.2});
 function get_next_page() {
 	page++;
 	var last_event = null;
@@ -192,7 +202,18 @@ function get_next_page() {
 		for(var i = 0; i < response.data.length; i++) {
 			var event = response.data[i],
 				mesh, radius = 0;
+			
+			// Identify the repository.
 			var repo = event.repo.name.split("/")[1];
+			if(repos.indexOf(repo) == -1)
+				repos[repos.length] = repo;
+			
+			// Determine the orb position.
+			var rpos = repos_positions[repos.indexOf(repo)];
+			var xpos = rpos[0] * 60 + (Math.random() - 0.5) * 5,
+				ypos = rpos[1] * 60 + (Math.random() - 0.5) * 5;
+			
+			// Build the orb timeline information object.
 			var item = {type: event.type,
 						repo: repo,
 						parent: last_event};
@@ -210,14 +231,37 @@ function get_next_page() {
 							new THREE.SphereGeometry(radius / 2, 6, 7),
 							orb_material[event.type]
 						);
-						commit_orb.position.x = radius + j * 7;
+						var orbit_radius = radius + j * 7 + 3;
+						commit_orb.position.x = orbit_radius;
 						var commit_orb_wrap = new THREE.Object3D();
 						commit_orb_wrap.add(commit_orb);
 						commit_orb_wrap.rotation.y = Math.random() * Math.PI * 2;
 						commit_orb_wrap.rotation.z = (Math.random() - 0.5) * 0.2;
 						commit_orb_wrap.rotation_speed = 0.1 / j / j;
+						
+						// Add the ring for the orbit.
+						var x2, z2;
+						var temp = 2 * Math.PI - Math.PI / 4;
+						var ring = new THREE.Object3D();
+						for(var k = 0; k < 2 * Math.PI + ring_increment; k += ring_increment) {
+							var x = Math.sin(k) * orbit_radius, z = Math.cos(k) * orbit_radius;
+							if(k == 0) {
+								x2 = x;
+								z2 = z;
+								continue;
+							}
+							var line_geom = new THREE.Geometry();
+							line_geom.vertices.push(new THREE.Vertex(new THREE.Vector3(x, 0, z)),
+													new THREE.Vertex(new THREE.Vector3(x2, 0, z2)));
+							ring.add(new THREE.Line(line_geom, ring_material));
+							x2 = x;
+							z2 = z;
+						}
+						ring.rotation.z = commit_orb_wrap.rotation.z;
+						mesh.add(ring);
 						if(Math.random() > 0.5)
 							commit_orb_wrap.rotation_speed *= -1;
+						
 						orbiting_orbs.push(commit_orb_wrap);
 						mesh.add(commit_orb_wrap);
 					}
@@ -230,6 +274,11 @@ function get_next_page() {
 						new THREE.SphereGeometry(radius, 20, 15),
 						orb_material[event.type]
 					);
+					var glower = new THREE.PointLight(0xfffd99, 3, 500);
+					glower.position.x = xpos;
+					glower.position.y = ypos;
+					glower.position.z = last_event == null ? 20 : 5 + last_event.orb.position.y + radius + last_event.radius;
+					timeline_wrapper.add(glower);
 					break;
 				case "PullRequestEvent":
 					radius = (event.payload.pull_request.additions + event.payload.pull_request.deletions) / 100 + 5;
@@ -240,17 +289,18 @@ function get_next_page() {
 						orb_material[event.type]
 					);
 					mesh.add(orb);
+					var addition_files = event.payload.pull_request.additions / event.payload.pull_request.deletions * event.payload.pull_request.changed_files;
 					for(var j = 0; j < Math.min(event.payload.pull_request.changed_files, 30); j++) {
 						var file_orb = new THREE.Mesh(
 							new THREE.SphereGeometry(2, 6, 7),
-							orb_material[event.type]
+							j > addition_files ? deletion_material : addition_material
 						);
 						file_orb.position.x = radius + 6;
 						var file_orb_wrap = new THREE.Object3D();
 						file_orb_wrap.add(file_orb);
 						file_orb_wrap.rotation.y = Math.random() * Math.PI * 2;
 						file_orb_wrap.rotation.z = (Math.random() - 0.5) * 0.6;
-						file_orb_wrap.rotation_speed = 0.005 * Math.random() + 0.005;
+						file_orb_wrap.rotation_speed = 0.01 * Math.random() + 0.005;
 						orbiting_orbs.push(file_orb_wrap);
 						mesh.add(file_orb_wrap);
 					}
@@ -260,17 +310,13 @@ function get_next_page() {
 			}
 			item.radius = radius;
 			
-			if(repos.indexOf(repo) == -1)
-				repos[repos.length] = repo;
-			
 			if(last_event == null)
 				mesh.position.y = 20;
 			else
 				mesh.position.y = 5 + last_event.orb.position.y + radius + last_event.radius;
 			
-			var rpos = repos_positions[repos.indexOf(repo)];
-			mesh.position.x = rpos[0] * 60 + (Math.random() - 0.5) * 5;
-			mesh.position.z = rpos[1] * 60 + (Math.random() - 0.5) * 5;
+			mesh.position.x = xpos;
+			mesh.position.z = ypos;
 			
 			timeline_objects.push(mesh);
 			item.orb = mesh;

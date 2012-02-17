@@ -1,0 +1,13 @@
+#biobox {
+	color: #999;
+	position: absolute;
+	bottom: 20%;
+	right: 40%;
+	text-align: left;
+	width: 250px;
+	background: rgba(255, 255, 255, 0.5);
+	-webkit-transform: perspective(500px) translate3d(-350px, 0, 0) rotate3d(0, 1, 0, 10deg);
+}
+#biobox a {
+	color: #555;
+}
