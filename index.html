@@ -285,7 +285,7 @@ function get_next_page() {
             if(repo_position_position >= repo_positions.length) {
                 repo_positions[repo_positions.length] = [
                     repo_angle,
-                    repo_positions.length / 10 + 1
+                    repo_positions.length / 5 + 1
                 ];
                 repo_angle += repo_angle_iteration;
                 repo_angle *= 1.05;
@@ -293,8 +293,8 @@ function get_next_page() {
             // Give the orb a bit of a spin
             var rpos = repo_positions[repo_position_position],
                 ypos = last_event != null ? 5 + last_event.orb.position.y + last_event.radius : 20,
-                xpos = Math.sin(rpos[0] + Math.pow(ypos, 1.05) / 300) / rpos[1] * 150,
-                zpos = Math.cos(rpos[0] + Math.pow(ypos, 1.05) / 300) / rpos[1] * 150;
+                xpos = Math.sin(rpos[0] + Math.pow(ypos, 1.05) / 300) * rpos[1] * 10 * Math.log(ypos),
+                zpos = Math.cos(rpos[0] + Math.pow(ypos, 1.05) / 300) * rpos[1] * 10 * Math.log(ypos);
             
             // Build the orb timeline information object.
             var item = {type: event.type,
@@ -309,13 +309,13 @@ function get_next_page() {
                     radius = 4;
                     mesh = new THREE.Object3D();
                     var orb = new THREE.Mesh(
-                        new THREE.SphereGeometry(radius, 20, 15),
+                        new THREE.SphereGeometry(radius, 7, 12),
                         orb_material[event.type]
                     );
                     mesh.add(orb);
                     for(var j = 0; j < Math.min(event.payload.size, 8); j++) {
                         var commit_orb = new THREE.Mesh(
-                            new THREE.SphereGeometry(radius / 2, 5, 6),
+                            new THREE.SphereGeometry(radius / 2, 4, 6),
                             orb_material[event.type]
                         );
                         var orbit_radius = radius + j * 9 + 3;
