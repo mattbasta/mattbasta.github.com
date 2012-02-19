@@ -34,7 +34,7 @@ var mouse = {x: 0, y: 0}, projector;
 
 var rotation = 0, timeline_rotation = 0, y_velocity = 0;
 
-var fog_remainder = 0xfdffc5; // 0xffffff - 0x02003a
+var fog_remainder = 0xfff3e9; // 0xffffff - 0x000c16
 
 function init() {
     viewport = document.createElement("div");
@@ -211,9 +211,9 @@ var timeline_rotator = setInterval(function() {
         // Update the fog.
         var fog_perc = 1 - Math.min(-(timeline_wrapper.position.y - 100), 500) / 500,
             f_red = Math.floor((fog_remainder >> 16) * fog_perc),
-            f_green = Math.floor(((fog_remainder - 0xfd0000) >> 8) * fog_perc),
-            f_blue = Math.floor((fog_remainder - 0xfdff00) * fog_perc),
-            new_fog_color = 0x02003a + (f_red << 16) + (f_green << 8) + f_blue;
+            f_green = Math.floor(((fog_remainder - 0xff0000) >> 8) * fog_perc),
+            f_blue = Math.floor((fog_remainder - 0xfff300) * fog_perc),
+            new_fog_color = 0x000c16 + (f_red << 16) + (f_green << 8) + f_blue;
         //console.log("r:" + f_red + ",g:" + f_green + ",b:" + f_blue);
         scene.fog.color = new THREE.Color(new_fog_color);
         renderer.setClearColor(scene.fog.color, 1);
