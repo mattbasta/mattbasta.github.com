@@ -243,9 +243,9 @@ var repos_positions = [[0, 0.866], [1, -0.866], [-1, -0.866], [1.154, 0.866], [0
 var orb_material = {
     "PushEvent": new THREE.MeshLambertMaterial({color: 0x993311}),
     "CreateEvent": new THREE.MeshBasicMaterial({color: 0xfff100}),
-    "PullRequestEvent": new THREE.MeshPhongMaterial({color: 0x1133aa})
+    "PullRequestEvent": new THREE.MeshLambertMaterial({color: 0x1133aa})
 };
-var addition_material = new THREE.MeshLambertMaterial({color: 0x168720, near: 500, far: 1000}),
+var addition_material = new THREE.MeshLambertMaterial({color: 0x168720}),
     deletion_material = new THREE.MeshLambertMaterial({color: 0xc01913}),
     ring_material = new THREE.LineBasicMaterial({color: 0xcccccc, linewidth: 1});
 function get_next_page() {
@@ -340,6 +340,8 @@ function get_next_page() {
                     
                     for(var event_type in orb_material)
                         renderer.initMaterial(orb_material[event_type], scene.lights, scene.fog);
+                    renderer.initMaterial(addition_material, scene.lights, scene.fog);
+                    renderer.initMaterial(deletion_material, scene.lights, scene.fog);
                     
                     break;
                 case "PullRequestEvent":
