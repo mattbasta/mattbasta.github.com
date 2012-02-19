@@ -33,8 +33,7 @@ var mouse = {x: 0, y: 0}, projector;
 
 var rotation = 0, timeline_rotation = 0, y_velocity = 0;
 
-var fog_remainder = 0xffffff - 0x02003a,
-    fog_unit = fog_remainder / 256; // 0xfdffc5
+var fog_remainder = 0xfdffc5; // 0xffffff - 0x02003a
 
 function init() {
     viewport = document.createElement("div");
@@ -67,7 +66,7 @@ function init() {
     timeline_wrapper.position.y = 100;
     scene.add(timeline_wrapper);
     
-    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer = new THREE.WebGLRenderer({antialias: true, maxLights: 10});
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(scene.fog.color, 1);
     
@@ -84,6 +83,8 @@ function init() {
                 y_velocity = 1 - (percent_y * 3);
             else if(percent_y > 0.66)
                 y_velocity = (percent_y - 0.66) * -3;
+            else
+                y_velocity = 0;
         }
         
         //scene.fog.color = fog_remainder * percent_y + 0x02003a;
@@ -176,6 +177,7 @@ function render() {
 var page = 0, timeline = [], is_loading = false;
 
 var rotator_interval = 1000 / 60, last_rotator_time = (new Date()).getTime();
+var biobox = document.getElementById("biobox");
 
 var timeline_rotator = setInterval(function() {
     // Figure out the coefficient of rotation so that staggered calls are
@@ -185,13 +187,26 @@ var timeline_rotator = setInterval(function() {
     last_rotator_time = now;
     
     // Rotate the timeline
-    timeline_rotation += 0.01 * perc_interval;
+    timeline_rotation += 0.005 * perc_interval;
     
     // If the timeline is not moving "up" at the bottom of the timeline...
     if(!(timeline_wrapper.position.y == 100 && y_velocity < 0) && y_velocity) {
         // Update the Y coordinate.
         timeline_wrapper.position.y -= y_velocity * 3.5 * perc_interval;
         timeline_wrapper.position.y = Math.min(100, timeline_wrapper.position.y);
+        
+        // Update the fog.
+        var fog_perc = 1 - Math.min(-(timeline_wrapper.position.y - 100), 500) / 500,
+            f_red = Math.floor((fog_remainder >> 16) * fog_perc),
+            f_green = Math.floor(((fog_remainder - 0xfd0000) >> 8) * fog_perc),
+            f_blue = Math.floor((fog_remainder - 0xfdff00) * fog_perc),
+            new_fog_color = 0x02003a + (f_red << 16) + (f_green << 8) + f_blue;
+        //console.log("r:" + f_red + ",g:" + f_green + ",b:" + f_blue);
+        scene.fog.color = new THREE.Color(new_fog_color);
+        renderer.setClearColor(scene.fog.color, 1);
+        document.body.style.backgroundColor = "#" + new_fog_color.toString(16);
+        biobox.style.opacity = fog_perc;
+        
         // If we're off the top of the timeline, load another unit on top.
         if(!is_loading && y_velocity > 0 && timeline.length > 30 &&
            -timeline_wrapper.position.y > (timeline[timeline.length - 1].orb.position.y - 450))
@@ -201,6 +216,7 @@ var timeline_rotator = setInterval(function() {
     // Rotate all of the rotating orbs.
     for(var i = 0; i < orbiting_orbs.length; i++) {
         var orb = orbiting_orbs[i];
+        // TODO: Ignore orbs that are off-screen.
         orb.rotation.y += orb.rotation_speed * perc_interval;
     }
 }, rotator_interval), timeline_visiblator = setInterval(function() {
@@ -209,12 +225,12 @@ var timeline_rotator = setInterval(function() {
         var item = timeline[i];
         if((item.orb.position.y + tpos < -20 ||
             item.orb.position.y + tpos > 700) && item.visible) {
-            console.log("Hiding " + item.type);
+            //console.log("Hiding " + item.type);
             timeline_wrapper.remove(item.orb);
             item.visible = false;
         } else if(!item.visible && (item.orb.position.y + tpos < 700 &&
                                     item.orb.position.y + tpos > -20)) {
-            console.log("Showing " + item.type);
+            //console.log("Showing " + item.type);
             timeline_wrapper.add(item.orb);
             item.visible = true;
         }
@@ -229,7 +245,6 @@ var orb_material = {
     "CreateEvent": new THREE.MeshBasicMaterial({color: 0xfff100}),
     "PullRequestEvent": new THREE.MeshPhongMaterial({color: 0x1133aa})
 };
-var ring_increment = Math.PI / 9;
 var addition_material = new THREE.MeshLambertMaterial({color: 0x168720, near: 500, far: 1000}),
     deletion_material = new THREE.MeshLambertMaterial({color: 0xc01913}),
     ring_material = new THREE.LineBasicMaterial({color: 0xcccccc, linewidth: 1});
@@ -270,7 +285,7 @@ function get_next_page() {
                     mesh.add(orb);
                     for(var j = 0; j < Math.min(event.payload.size, 8); j++) {
                         var commit_orb = new THREE.Mesh(
-                            new THREE.SphereGeometry(radius / 2, 6, 7),
+                            new THREE.SphereGeometry(radius / 2, 5, 6),
                             orb_material[event.type]
                         );
                         var orbit_radius = radius + j * 9 + 3;
@@ -283,7 +298,8 @@ function get_next_page() {
                         
                         // Add the ring for the orbit.
                         var x2, z2;
-                        var temp = 2 * Math.PI - Math.PI / 4;
+                        var temp = 2 * Math.PI - Math.PI / 4,
+                            ring_increment = Math.PI / Math.max(j, 6);
                         var ring = new THREE.Object3D();
                         for(var k = 0; k < 2 * Math.PI + ring_increment; k += ring_increment) {
                             var x = Math.sin(k) * orbit_radius, z = Math.cos(k) * orbit_radius;
@@ -321,6 +337,10 @@ function get_next_page() {
                     glower.position.z = zpos;
                     glower.position.y = last_event == null ? 20 : 5 + last_event.orb.position.y + radius + last_event.radius;
                     timeline_wrapper.add(glower);
+                    
+                    for(var event_type in orb_material)
+                        renderer.initMaterial(orb_material[event_type], scene.lights, scene.fog);
+                    
                     break;
                 case "PullRequestEvent":
                     radius = (event.payload.pull_request.additions + event.payload.pull_request.deletions) / 100 + 5;

@@ -14,11 +14,13 @@
 }
 
 #biobox {
-	color: #999;
+	color: #666;
 	position: absolute;
 	right: 71.5%;
 	bottom: 20%;
 	text-align: left;
+    opacity: 1;
+    padding: 1em;
 }
 
 .webgl #biobox {
