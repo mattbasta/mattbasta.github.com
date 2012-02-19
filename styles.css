@@ -33,17 +33,20 @@
 #biobox a {color: #555;}
 
 #oldie {
+	bottom: 20px;
 	position: absolute;
 	right: 20px;
-	bottom: 20px;
 }
 
 #orb_info {
-    display: none;
-    position:absolute;
-    bottom: 1.5em;
-    right: 1.5em;
     background: rgba(255, 255, 255, 0.75);
+    bottom: 1.5em;
+    display: none;
+    max-width: 350px;
     padding: 1.5em;
+    position: absolute;
+    right: 1.5em;
+    text-align: left;
 }
-#orb_info strong {display:block;}
+#orb_info strong {display: block;}
+#orb_info p strong {display: inline;}

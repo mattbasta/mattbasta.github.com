@@ -25,10 +25,17 @@
 <!--
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
+var star_src = 'data:image/png;base64,' +
+		'iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAMAAAAR8Wy4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFn' +
+		'ZVJlYWR5ccllPAAAAAZQTFRF////AAAAVcLTfgAAAAJ0Uk5T/wDltzBKAAAAIUlEQVR42mJgRAMM1BNg' +
+		'AAJkAQYGuAg+AbxmUOYwgAADAF4wAMhqpB6nAAAAAElFTkSuQmCC',
+    single_star = new Image();
+single_star.src = star_src;
+
 var viewport, scene, camera, cameraTarget, renderer;
 var name_parent, name_text_geo, name_mesh, name_material, textMaterialFront, textMaterialSide;
 var main_light, timeline_wrapper, timeline_objects = [], hover_object = null;
-var orbiting_orbs = [];
+var orbiting_orbs = [], star_material, star_geometry1, star_field1, star_geometry2, star_field2;
 
 var mouse = {x: 0, y: 0}, projector;
 
@@ -41,9 +48,9 @@ function init() {
     document.body.appendChild(viewport);
     
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xffffff, 0, 3000);
+    scene.fog = new THREE.Fog(0xffffff, 0, 4000);
     
-    camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 1500);
+    camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 100, 2500);
     camera.position.set(0, 400, 1000);
     scene.add(camera);
     
@@ -66,6 +73,36 @@ function init() {
     timeline_wrapper = new THREE.Object3D();
     timeline_wrapper.position.y = 100;
     scene.add(timeline_wrapper);
+    
+    // Create the starfield.
+    //var star_texture = new THREE.Texture(single_star);
+    //star_texture.needsUpdate = true;
+    star_material = new THREE.ParticleBasicMaterial({
+        color: 0xffffff,
+        size: 4
+    });
+    star_geometry1 = new THREE.Geometry();
+    star_geometry2 = new THREE.Geometry();
+    
+    for(var i = 0; i < 250; i++) {
+        var star_orbit_radius = Math.random() * 60 + 1001,
+            star_orbit_angle = Math.random() * 2 * Math.PI,
+            vector = new THREE.Vector3(Math.sin(star_orbit_angle) * star_orbit_radius,
+                                       Math.random() * 750,
+                                       Math.cos(star_orbit_angle) * star_orbit_radius);
+            //vector = new THREE.Vector3(0,
+            //                           i * 5,
+            //                           0);
+        (i % 2 == 0 ? star_geometry1 : star_geometry2).vertices.push(new THREE.Vertex(vector));
+    }
+    
+    star_field1 = new THREE.ParticleSystem(star_geometry1, star_material);
+    star_field2 = new THREE.ParticleSystem(star_geometry2, star_material);
+    var star_field2_wrapper = new THREE.Object3D();
+    star_field2_wrapper.add(star_field2);
+    star_field2_wrapper.rotation.z = - Math.PI / 3;
+    scene.add(star_field1);
+    scene.add(star_field2_wrapper);
     
     renderer = new THREE.WebGLRenderer({antialias: true, maxLights: 10});
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -202,6 +239,10 @@ var timeline_rotator = setInterval(function() {
     // Rotate the timeline
     timeline_rotation += (hover_object == null ? 0.005 : 0.0005) * perc_interval;
     
+    // Rotate the star fields
+    star_field1.rotation.y += 0.0004 * perc_interval;
+    star_field2.rotation.y += 0.0002 * perc_interval;
+    
     // If the timeline is not moving "up" at the bottom of the timeline...
     if(!(timeline_wrapper.position.y == 100 && y_velocity < 0) && y_velocity) {
         // Update the Y coordinate.
@@ -249,7 +290,6 @@ var timeline_rotator = setInterval(function() {
         }
     }
 }, 500);
-
 
 var repos = [];
 var repo_angle_iteration = Math.PI * 11 / 29,
@@ -305,7 +345,7 @@ function get_next_page() {
                 case "PushEvent":
                     item.event_name = "Pushed Commits";
                     item.content = "<p>Matt pushed " + event.payload.size + " commit" + (event.payload.size > 1 ? "s" : "") + " to " + event.repo.name + "</p>";
-                    item.href = event.payload.commits[0].url;
+                    item.href = "https://github.com/" + event.repo.name + "/commit/" + event.payload.commits[0].sha;
                     radius = 4;
                     mesh = new THREE.Object3D();
                     var orb = new THREE.Mesh(
@@ -358,7 +398,8 @@ function get_next_page() {
                     if(last_event != null && last_event.repo == repo && last_event.type == "PullRequestEvent")
                         continue;
                     item.event_name = "Created Branch";
-                    item.href = event.repo.url;
+                    item.href = "https://github.com/" + event.repo.name;
+                    item.content = "<p>Matt created a new " + event.payload.ref_type + " in " + event.repo.name + "</p>";
                     radius = 15;
                     mesh = new THREE.Mesh(
                         new THREE.SphereGeometry(5, 20, 15),
@@ -379,6 +420,10 @@ function get_next_page() {
                 case "PullRequestEvent":
                     item.event_name = "Pull Request";
                     item.href = event.payload.pull_request._links.html.href;
+                    item.content = "<p>Matt touched a pull request with " + event.payload.commits + " commits in " + event.repo.name + "</p>";
+                    item.content += "<p><strong>Changed files:</strong> <span>" + event.payload.pull_request.changed_files + "</span></p>"
+                    item.content += "<p><strong>Lines added:</strong> <span>" + event.payload.pull_request.additions + "</span></p>"
+                    item.content += "<p><strong>Lines removed:</strong> <span>" + event.payload.pull_request.deletions + "</span></p>"
                     radius = (event.payload.pull_request.additions + event.payload.pull_request.deletions) / 100 + 5;
                     radius = Math.min(radius, 30);
                     mesh = new THREE.Object3D();
