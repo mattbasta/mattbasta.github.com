@@ -25,13 +25,6 @@
 <!--
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-var star_src = 'data:image/png;base64,' +
-		'iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAMAAAAR8Wy4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFn' +
-		'ZVJlYWR5ccllPAAAAAZQTFRF////AAAAVcLTfgAAAAJ0Uk5T/wDltzBKAAAAIUlEQVR42mJgRAMM1BNg' +
-		'AAJkAQYGuAg+AbxmUOYwgAADAF4wAMhqpB6nAAAAAElFTkSuQmCC',
-    single_star = new Image();
-single_star.src = star_src;
-
 var viewport, scene, camera, cameraTarget, renderer;
 var name_parent, name_text_geo, name_mesh, name_material, textMaterialFront, textMaterialSide;
 var main_light, timeline_wrapper, timeline_objects = [], hover_object = null;
@@ -75,8 +68,6 @@ function init() {
     scene.add(timeline_wrapper);
     
     // Create the starfield.
-    //var star_texture = new THREE.Texture(single_star);
-    //star_texture.needsUpdate = true;
     star_material = new THREE.ParticleBasicMaterial({
         color: 0xffffff,
         size: 4
