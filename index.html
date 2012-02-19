@@ -209,7 +209,7 @@ var timeline_rotator = setInterval(function() {
         
         // If we're off the top of the timeline, load another unit on top.
         if(!is_loading && y_velocity > 0 && timeline.length > 30 &&
-           -timeline_wrapper.position.y > (timeline[timeline.length - 1].orb.position.y - 450))
+           -timeline_wrapper.position.y > (timeline[timeline.length - 1].orb.position.y - 600))
             get_next_page();
     }
     
@@ -239,7 +239,9 @@ var timeline_rotator = setInterval(function() {
 
 
 var repos = [];
-var repos_positions = [[0, 0.866], [1, -0.866], [-1, -0.866], [1.154, 0.866], [0, -1.154], [-1.154, 0.866], [0, 1.72], [2, -1.72], [-2, -1.72]];
+var repo_angle_iteration = Math.PI * 11 / 29,
+    repo_angle = repo_angle_iteration,
+    repo_positions = [];
 var orb_material = {
     "PushEvent": new THREE.MeshLambertMaterial({color: 0x993311}),
     "CreateEvent": new THREE.MeshBasicMaterial({color: 0xfff100}),
@@ -266,9 +268,20 @@ function get_next_page() {
                 repos[repos.length] = repo;
             
             // Determine the orb position.
-            var rpos = repos_positions[repos.indexOf(repo)];
-            var xpos = rpos[0] * 60 + (Math.random() - 0.5) * 5,
-                zpos = rpos[1] * 60 + (Math.random() - 0.5) * 5;
+            var repo_position_position = repos.indexOf(repo)
+            if(repo_position_position >= repo_positions.length) {
+                repo_positions[repo_positions.length] = [
+                    repo_angle,
+                    repo_positions.length / 10 + 1
+                ];
+                repo_angle += repo_angle_iteration;
+                repo_angle *= 1.05;
+            }
+            // Give the orb a bit of a spin
+            var rpos = repo_positions[repo_position_position],
+                ypos = last_event != null ? 5 + last_event.orb.position.y + last_event.radius : 20,
+                xpos = Math.sin(rpos[0] + Math.pow(ypos, 1.05) / 300) / rpos[1] * 150,
+                zpos = Math.cos(rpos[0] + Math.pow(ypos, 1.05) / 300) / rpos[1] * 150;
             
             // Build the orb timeline information object.
             var item = {type: event.type,
@@ -356,7 +369,7 @@ function get_next_page() {
                     var addition_files = event.payload.pull_request.additions / event.payload.pull_request.deletions * event.payload.pull_request.changed_files;
                     for(var j = 0; j < Math.min(event.payload.pull_request.changed_files, 30); j++) {
                         var file_orb = new THREE.Mesh(
-                            new THREE.SphereGeometry(1.5, 6, 7),
+                            new THREE.SphereGeometry(1.5, 3, 6),
                             j > addition_files ? deletion_material : addition_material
                         );
                         file_orb.position.x = radius + 6;
@@ -374,10 +387,7 @@ function get_next_page() {
             }
             item.radius = radius;
             
-            if(last_event == null)
-                mesh.position.y = 20;
-            else
-                mesh.position.y = 5 + last_event.orb.position.y + radius + last_event.radius;
+            mesh.position.y = ypos + radius;
             
             mesh.position.x = xpos;
             mesh.position.z = zpos;
