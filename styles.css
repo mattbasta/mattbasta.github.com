@@ -37,3 +37,13 @@
 	right: 20px;
 	bottom: 20px;
 }
+
+#orb_info {
+    display: none;
+    position:absolute;
+    bottom: 1.5em;
+    right: 1.5em;
+    background: rgba(255, 255, 255, 0.75);
+    padding: 1.5em;
+}
+#orb_info strong {display:block;}

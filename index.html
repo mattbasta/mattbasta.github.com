@@ -16,6 +16,7 @@
             <a href="https://github.com/mattbasta">all my code</a> &bull; <a href="https://github.com/mattbasta/mattbasta.github.com">code for this page</a>
         </p>
     </section>
+    <aside id="orb_info"></aside>
 </div>
 <script type="text/javascript" src="three.js"></script>
 <script type="text/javascript" src="detector.js"></script>
@@ -97,16 +98,28 @@ function init() {
         
         var ray = new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize());
         var intersects = ray.intersectObjects(timeline_objects);
-        if(intersects.length > 0)
-            hover_object = intersects[0].object;
-            //var intersects = ray.intersectObject( plane );
-            //offset.copy(intersects[ 0 ].point).subSelf( plane.position );
-        else
-            hover_object = null;
+            next_hover_object = intersects.length > 0 ? intersects[0].object : null;
+        if(hover_object != next_hover_object) {
+            hover_object = next_hover_object;
+            if(hover_object) {
+                //console.log(hover_object.parent.name);
+                var tl_item = hover_object.timeline_item || hover_object.parent.timeline_item;
+                if(!tl_item)
+                    return;
+                $("#orb_info").show().html("<strong>" + tl_item.event_name + "</strong><p>" + tl_item.content + "</p>");
+            } else {
+                $("#orb_info").hide().html("");
+            }
+        }
         
     });
     viewport.addEventListener("mousedown", function(e) {
         e.preventDefault();
+        if(hover_object) {
+            var tl_item = hover_object.timeline_item || hover_object.parent.timeline_item;
+            if(tl_item)
+                window.open(tl_item.href);
+        }
         // TODO: Handle click if hover_object is not null.
     });
     
@@ -187,7 +200,7 @@ var timeline_rotator = setInterval(function() {
     last_rotator_time = now;
     
     // Rotate the timeline
-    timeline_rotation += 0.005 * perc_interval;
+    timeline_rotation += (hover_object == null ? 0.005 : 0.0005) * perc_interval;
     
     // If the timeline is not moving "up" at the bottom of the timeline...
     if(!(timeline_wrapper.position.y == 100 && y_velocity < 0) && y_velocity) {
@@ -286,9 +299,13 @@ function get_next_page() {
             // Build the orb timeline information object.
             var item = {type: event.type,
                         repo: repo,
-                        parent: last_event};
+                        parent: last_event,
+                        href: "https://github.com/mattbasta"};
             switch(event.type) {
                 case "PushEvent":
+                    item.event_name = "Pushed Commits";
+                    item.content = "<p>Matt pushed " + event.payload.size + " commit" + (event.payload.size > 1 ? "s" : "") + " to " + event.repo.name + "</p>";
+                    item.href = event.payload.commits[0].url;
                     radius = 4;
                     mesh = new THREE.Object3D();
                     var orb = new THREE.Mesh(
@@ -340,9 +357,11 @@ function get_next_page() {
                 case "CreateEvent":
                     if(last_event != null && last_event.repo == repo && last_event.type == "PullRequestEvent")
                         continue;
-                    radius = 5;
+                    item.event_name = "Created Branch";
+                    item.href = event.repo.url;
+                    radius = 15;
                     mesh = new THREE.Mesh(
-                        new THREE.SphereGeometry(radius, 20, 15),
+                        new THREE.SphereGeometry(5, 20, 15),
                         orb_material[event.type]
                     );
                     var glower = new THREE.PointLight(0xfffd99, 3, 500);
@@ -358,6 +377,8 @@ function get_next_page() {
                     
                     break;
                 case "PullRequestEvent":
+                    item.event_name = "Pull Request";
+                    item.href = event.payload.pull_request._links.html.href;
                     radius = (event.payload.pull_request.additions + event.payload.pull_request.deletions) / 100 + 5;
                     radius = Math.min(radius, 30);
                     mesh = new THREE.Object3D();
@@ -392,9 +413,10 @@ function get_next_page() {
             mesh.position.x = xpos;
             mesh.position.z = zpos;
             
+            mesh.timeline_item = item;
             timeline_objects.push(mesh);
             item.orb = mesh;
-            timeline[timeline.length] = item;
+            timeline.push(item);
             last_event = item;
             
             if(item.visible = (mesh.position.y + timeline_wrapper.position.y < 700))
