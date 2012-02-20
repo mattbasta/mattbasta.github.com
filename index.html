@@ -262,7 +262,8 @@ var timeline_rotator = setInterval(function() {
     for(var i = 0; i < orbiting_orbs.length; i++) {
         var orb = orbiting_orbs[i];
         // TODO: Ignore orbs that are off-screen.
-        orb.rotation.y += orb.rotation_speed * perc_interval;
+        if(orb.visible)
+            orb.rotation.y += orb.rotation_speed * perc_interval;
     }
 }, rotator_interval), timeline_visiblator = setInterval(function() {
     var tpos = timeline_wrapper.position.y;
@@ -273,11 +274,13 @@ var timeline_rotator = setInterval(function() {
             //console.log("Hiding " + item.type);
             timeline_wrapper.remove(item.orb);
             item.visible = false;
+            item.orb.visible = false;
         } else if(!item.visible && (item.orb.position.y + tpos < 700 &&
                                     item.orb.position.y + tpos > -20)) {
             //console.log("Showing " + item.type);
             timeline_wrapper.add(item.orb);
             item.visible = true;
+            item.orb.visible = true;
         }
     }
 }, 500);
@@ -331,7 +334,8 @@ function get_next_page() {
             var item = {type: event.type,
                         repo: repo,
                         parent: last_event,
-                        href: "https://github.com/mattbasta"};
+                        href: "https://github.com/mattbasta",
+                        visible: true};
             switch(event.type) {
                 case "PushEvent":
                     item.event_name = "Pushed Commits";
@@ -449,6 +453,8 @@ function get_next_page() {
             
             mesh.position.x = xpos;
             mesh.position.z = zpos;
+            
+            mesh.visible = true;
             
             mesh.timeline_item = item;
             timeline_objects.push(mesh);
