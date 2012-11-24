@@ -131,6 +131,7 @@ function init() {
 
         mouse_vector.x = (percent_x * 2) - 1;
         mouse_vector.y = -(percent_y * 2) + 1;
+        mouse_vector.z = 0.5;  // Force this because the vector gets munched.
         projector.unprojectVector(mouse_vector, camera);
 
         mouse_ray.origin = camera.position;
