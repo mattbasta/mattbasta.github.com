@@ -30,8 +30,6 @@ var name_parent, name_text_geo, name_mesh, name_material, textMaterialFront, tex
 var main_light, timeline_wrapper, timeline_objects = [], hover_object = null;
 var orbiting_orbs = [], star_material, star_geometry1, star_field1, star_geometry2, star_field2;
 
-var mouse = {x: 0, y: 0}, projector;
-
 var rotation = 0, timeline_rotation = 0, y_velocity = 0;
 
 var fog_remainder = 0xfff3e9; // 0xffffff - 0x000c16
@@ -101,8 +99,23 @@ function init() {
     
     viewport.appendChild(renderer.domElement);
     
-    projector = new THREE.Projector();
-    
+    var projector = new THREE.Projector();
+
+    var $orb_info = $("#orb_info");
+    function updateHover(next_hover_object) {
+        hover_object = next_hover_object;
+        if(hover_object) {
+            var tl_item = hover_object.timeline_item || hover_object.parent.timeline_item;
+            if(!tl_item)
+                return;
+            $orb_info.show().html("<strong>" + tl_item.event_name + "</strong><p>" + tl_item.content + "</p>");
+        } else {
+            $orb_info.hide().html("");
+        }
+    }
+
+    var mouse_vector = new THREE.Vector3(0, 0, 0.5),
+        mouse_ray = new THREE.Ray();
     viewport.addEventListener("mousemove", function(e) {
         rotation = Math.PI * (e.clientX / window.innerWidth - 0.5) * 0.3;
         var percent_y = e.clientY / window.innerHeight,
@@ -115,29 +128,17 @@ function init() {
             else
                 y_velocity = 0;
         }
-        
-        //scene.fog.color = fog_remainder * percent_y + 0x02003a;
-        
-        mouse.x = (percent_x * 2) - 1;
-        mouse.y = -(percent_y * 2) + 1;
-        
-        var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
-        projector.unprojectVector(vector, camera);
-        
-        var ray = new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize());
-        var intersects = ray.intersectObjects(timeline_objects);
-            next_hover_object = intersects.length > 0 ? intersects[0].object : null;
+
+        mouse_vector.x = (percent_x * 2) - 1;
+        mouse_vector.y = -(percent_y * 2) + 1;
+        projector.unprojectVector(mouse_vector, camera);
+
+        mouse_ray.origin = camera.position;
+        mouse_ray.destination = mouse_vector.subSelf(camera.position).normalize();
+        var intersects = mouse_ray.intersectObjects(timeline_objects);
+            next_hover_object = intersects.length ? intersects[0].object : null;
         if(hover_object != next_hover_object) {
-            hover_object = next_hover_object;
-            if(hover_object) {
-                //console.log(hover_object.parent.name);
-                var tl_item = hover_object.timeline_item || hover_object.parent.timeline_item;
-                if(!tl_item)
-                    return;
-                $("#orb_info").show().html("<strong>" + tl_item.event_name + "</strong><p>" + tl_item.content + "</p>");
-            } else {
-                $("#orb_info").hide().html("");
-            }
+            updateHover(next_hover_object);
         }
         
     });
@@ -148,7 +149,6 @@ function init() {
             if(tl_item)
                 window.open(tl_item.href);
         }
-        // TODO: Handle click if hover_object is not null.
     });
     
 }
