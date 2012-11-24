@@ -229,7 +229,7 @@ var timeline_rotator = setInterval(function() {
     last_rotator_time = now;
     
     // Rotate the timeline
-    timeline_rotation += (hover_object == null ? 0.005 : 0.0005) * perc_interval;
+    timeline_rotation += (hover_object ? 0.0005 : 0.005) * perc_interval;
     
     // Rotate the star fields
     star_field1.rotation.y += 0.0004 * perc_interval;
@@ -242,15 +242,12 @@ var timeline_rotator = setInterval(function() {
         timeline_wrapper.position.y = Math.min(100, timeline_wrapper.position.y);
         
         // Update the fog.
-        var fog_perc = 1 - Math.min(-(timeline_wrapper.position.y - 100), 500) / 500,
-            f_red = Math.floor((fog_remainder >> 16) * fog_perc),
-            f_green = Math.floor(((fog_remainder - 0xff0000) >> 8) * fog_perc),
-            f_blue = Math.floor((fog_remainder - 0xfff300) * fog_perc),
-            new_fog_color = 0x000c16 + (f_red << 16) + (f_green << 8) + f_blue;
-        //console.log("r:" + f_red + ",g:" + f_green + ",b:" + f_blue);
-        scene.fog.color = new THREE.Color(new_fog_color);
+        var fog_perc = 1 - Math.min(-(timeline_wrapper.position.y - 100), 500) / 500;
+        scene.fog.color.r = Math.floor((fog_remainder >> 16) * fog_perc) / 255;
+        scene.fog.color.g = Math.floor(((fog_remainder - 0xff0000) >> 8) * fog_perc + 12) / 255;
+        scene.fog.color.b = Math.floor((fog_remainder - 0xfff300) * fog_perc + 22) / 255;
+
         renderer.setClearColor(scene.fog.color, 1);
-        document.body.style.backgroundColor = "#" + new_fog_color.toString(16);
         biobox.style.opacity = fog_perc;
         
         // If we're off the top of the timeline, load another unit on top.
