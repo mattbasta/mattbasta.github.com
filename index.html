@@ -135,7 +135,7 @@ function init() {
         projector.unprojectVector(mouse_vector, camera);
 
         mouse_ray.origin = camera.position;
-        mouse_ray.destination = mouse_vector.subSelf(camera.position).normalize();
+        mouse_ray.direction = mouse_vector.subSelf(camera.position).normalize();
         var intersects = mouse_ray.intersectObjects(timeline_objects);
             next_hover_object = intersects.length ? intersects[0].object : null;
         if(hover_object != next_hover_object) {
