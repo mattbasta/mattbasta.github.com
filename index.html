@@ -339,8 +339,9 @@ function get_next_page() {
             switch(event.type) {
                 case "PushEvent":
                     item.event_name = "Pushed Commits";
-                    item.content = "<p>Matt pushed " + event.payload.size + " commit" + (event.payload.size > 1 ? "s" : "") + " to " + event.repo.name + "</p>";
-                    item.href = "https://github.com/" + event.repo.name + "/commit/" + event.payload.commits[0].sha;
+                    item.content = "<p>Matt pushed " + event.payload.size + " commit" + (event.payload.size != 1 ? "s" : "") + " to " + event.repo.name + "</p>";
+                    var pushcommit = event.payload.commits.length ? event.payload.commits[0].sha : event.payload.head;
+                    item.href = "https://github.com/" + event.repo.name + "/commit/" + pushcommit;
                     radius = 4;
                     mesh = new THREE.Object3D();
                     var orb = new THREE.Mesh(
