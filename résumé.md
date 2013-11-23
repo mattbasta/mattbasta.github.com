@@ -18,7 +18,7 @@ intern, I developed static and dynamic analysis tools which inspect
 addons.mozilla.org submissions for best practices and malicious code. As a
 contractor, I ported these tools for use with the Marketplace and HTML5 apps.
 
-Relevant Experience: Node.js and client-side JavaScript, Djagno, Python
+Relevant Experience: Node.js and client-side JavaScript, Django, Python
 
 * https://github.com/mozilla/fireplace
 * https://github.com/mozilla/zamboni
