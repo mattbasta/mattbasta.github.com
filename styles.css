@@ -1,52 +1,28 @@
-#fallback_name {
-	color: #eee;
-	text-shadow: -0.5px -1px 0 #aaaaaa,
-				 -1px -2px 0 #a9a9a9,
-				 -1.5px -3px 0 #a4a4a4,
-				 -2px -4px 0 #a0a0a0,
-				 -2.5px -5px 0 #999999;
-	font-size: 45px;
-	position: fixed;
-	bottom: 40%;
-	bottom: calc(20% + 300px);
-	text-transform: lowercase;
-	right: 70%;
+body, html {
+    background: #000;
+    font-family: sans-serif;
+    overflow: hidden;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 
-#biobox {
-	color: #666;
-	position: absolute;
-	right: 71.5%;
-	bottom: 20%;
-	text-align: left;
-    opacity: 1;
-    padding: 1em;
-}
-
-.webgl #biobox {
-	right: 40%;
-	width: 250px;
-	background: rgba(255, 255, 255, 0.5);
-	-moz-transform: perspective(500px) translate3d(-350px, 0, 0) rotate3d(0, 1, 0, 10deg);
-	-webkit-transform: perspective(500px) translate3d(-350px, 0, 0) rotate3d(0, 1, 0, 10deg);
-}
-#biobox a {color: #555;}
-
-#oldie {
-	bottom: 20px;
-	position: absolute;
-	right: 20px;
-}
-
-#orb_info {
-    background: rgba(255, 255, 255, 0.75);
+#content {
+    background: rgba(0, 0, 0, 0.5);
     bottom: 1.5em;
-    display: none;
-    max-width: 350px;
+    left: 1.5em;
     padding: 1.5em;
-    position: absolute;
-    right: 1.5em;
-    text-align: left;
+    position: fixed;
 }
-#orb_info strong {display: block;}
-#orb_info p strong {display: inline;}
+
+#content h1 {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+#content, #content a {
+    color: #ddd;
+}
