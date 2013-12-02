@@ -6,7 +6,7 @@
 
 var COUNT = 250;
 var DOUBLES = 8;
-var TEXTURE_SIZE = 20;
+var TEXTURE_SIZE = 30;
 var HUE_DAMPENER = 200;
 var ALIGNMENT_THRESHOLD = 30;
 
@@ -16,15 +16,19 @@ camera.position.z = 1000;
 var to_x = 0;
 var to_y = 0;
 
-function generateOrb(alignment, canvas) {
-    alignment = Math.pow(alignment / HUE_DAMPENER, 3);
+var orbCache = {};
+function generateOrb(alignment) {
+    alignment = Math.pow(alignment / HUE_DAMPENER, 3) | 0;
     var haze = Math.min(Math.max(4000 / alignment, 10), 35) | 0;
     var haze_dark = Math.min(Math.max(3000 / alignment / 3, 5), 15) | 0;
     alignment = Math.min(Math.max(alignment + 190, 190), 255) | 0;
-    if (!canvas) {
-        canvas = document.createElement('canvas');
-        canvas.width = canvas.height = TEXTURE_SIZE;
+    var cacheValue = alignment + ':' + haze + ':' + haze_dark;
+    if (cacheValue in orbCache) {
+        return orbCache[cacheValue];
     }
+
+    var canvas = document.createElement('canvas');
+    canvas.width = canvas.height = TEXTURE_SIZE;
 
     var context = canvas.getContext('2d');
     context.clearRect(0, 0, TEXTURE_SIZE, TEXTURE_SIZE);
@@ -37,6 +41,7 @@ function generateOrb(alignment, canvas) {
     context.fillStyle = gradient;
     context.fillRect(0, 0, TEXTURE_SIZE, TEXTURE_SIZE);
 
+    orbCache[cacheValue] = canvas;
     return canvas;
 }
 
@@ -45,8 +50,10 @@ var scene_wrap = new THREE.Object3D();
 
 function sphere(index) {
     this.index = index;
+    this.texture = new THREE.Texture(generateOrb(0));
+    this.texture.needsUpdate = true;
     this.material = new THREE.SpriteMaterial({
-        map: new THREE.Texture(generateOrb(0)),
+        map: this.texture,
         blending: THREE.AdditiveBlending
     });
     this.particle = new THREE.Sprite(this.material);
@@ -67,11 +74,12 @@ sphere.prototype.setMass = function(mass) {
 };
 
 sphere.prototype.setAlignment = function(alignment) {
+    // return;
     this.alignment = alignment;
     if (Math.abs(this.alignment - this.last_alignment) > ALIGNMENT_THRESHOLD) {
         this.last_alignment = alignment;
-        this.material.map.image = generateOrb(alignment, this.material.map.image);
-        this.material.needsUpdate = true;
+        this.texture.image = generateOrb(alignment, this.texture.image);
+        this.texture.needsUpdate = true;
     }
 };
 
@@ -84,8 +92,14 @@ for (var i = 0; i < COUNT; i++) {
 }
 scene.add(scene_wrap);
 
-var renderer = new THREE.CanvasRenderer();
-// var renderer = new THREE.WebGLRenderer({antialias: false, alpha: false});
+// var test_geom = new THREE.Geometry();
+// test_geom.vertices.push( new THREE.Vector3( -100,  100, 0 ) );
+// test_geom.vertices.push( new THREE.Vector3( 100, -100, 0 ) );
+// var testline = new THREE.Line(test_geom);
+// scene_wrap.add(testline);
+
+// var renderer = new THREE.CanvasRenderer();
+var renderer = new THREE.WebGLRenderer({antialias: false, alpha: false});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
