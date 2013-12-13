@@ -10,7 +10,7 @@ design and optimization, and style guide purism
 
 ### Engineer, Mozilla Corporation
 
-* Full Time (June 2012 - Present)
+* Full Time (June 2012 - December 2013)
 * Contractor, Intern (May 2010 - June 2012)
 
 At Mozilla, I have led development of the Firefox Marketplace front-end. As an
