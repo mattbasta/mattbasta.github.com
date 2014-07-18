@@ -8,6 +8,11 @@ JavaScript development and optimization, Python, static analysis, compiler
 design and optimization, and style guide purism
 
 
+### Software Engineer, Box
+
+January 2014 - Present
+
+
 ### Engineer, Mozilla Corporation
 
 * Full Time (June 2012 - December 2013)
