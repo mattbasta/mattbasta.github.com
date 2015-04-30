@@ -4,13 +4,20 @@
 
 ## Experience
 
-JavaScript development and optimization, Python, static analysis, compiler
-design and optimization, and style guide purism
+Performance analysis, JavaScript development and optimization, Python,
+static analysis, compiler design and optimization, and style guide purism
 
 
-### Software Engineer, Box
+### Senior Software Engineer, Box
 
 January 2014 - Present
+
+At Box I help the Performance Team improve the speed of the Box web
+application.
+
+Relevant Experience: PHP, JavaScript, Python
+
+* https://github.com/box/brainy
 
 
 ### Engineer, Mozilla Corporation
@@ -18,7 +25,7 @@ January 2014 - Present
 * Full Time (June 2012 - December 2013)
 * Contractor, Intern (May 2010 - June 2012)
 
-At Mozilla, I have led development of the Firefox Marketplace front-end. As an
+At Mozilla I led development of the Firefox Marketplace front-end. As an
 intern, I developed static and dynamic analysis tools which inspect
 addons.mozilla.org submissions for best practices and malicious code. As a
 contractor, I ported these tools for use with the Marketplace and HTML5 apps.
@@ -71,7 +78,7 @@ I am a contributor to the nunjucks templating engine by James Long. I've been
 active in development and testing since early 2013, fixing multiple critical
 bugs and implementing optimizations for generated code.
 
-https://github.com/jlongster/nunjucks
+https://github.com/mozilla/nunjucks
 
 
 ## Education
@@ -82,8 +89,6 @@ https://github.com/jlongster/nunjucks
 
 ## Other
 
-* Longest Github streak (without cheating): 60 days
-* Currently operate nearly a dozen parody social media presences, one of which
-  is followed by Brendan Eich, and another of was retweeted by William Gibson.
+* Longest Github streak (without cheating): 200+ days
+* Currently operate nearly a dozen parody social media presences
 * I spend time porting a MMO video game that I wrote in college to Golang
-* I'm a die-hard Chrome user
