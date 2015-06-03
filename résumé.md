@@ -5,7 +5,8 @@
 ## Experience
 
 Performance analysis, JavaScript development and optimization, Python,
-static analysis, compiler design and optimization, and style guide purism
+static analysis, compiler design and optimization, parser implementation,
+and style guide purism
 
 
 ### Senior Software Engineer, Box
@@ -13,11 +14,21 @@ static analysis, compiler design and optimization, and style guide purism
 January 2014 - Present
 
 At Box I help the Performance Team improve the speed of the Box web
-application.
+application. In this role, I've helped to lead the effort to redesign and
+rewrite the front-end of the Box web application while also helping to
+refactor and improve the underlying back-end PHP code. I also have worked
+to help engage teams outside of the Engineering org in an effort to
+increase awareness of performance and software best practices.
+
+I have also built and deployed two of Box's open source projects.
+My work on Shalam--a novel CSS spriting tool--resulted in the filing
+of a patent. Brainy--a security and performance-centric fork of the Smarty
+templating language--has been included in PHP The Right Way.
 
 Relevant Experience: PHP, JavaScript, Python
 
 * https://github.com/box/brainy
+* https://github.com/box/shalam (http://opensource.box.com/shalam)
 
 
 ### Engineer, Mozilla Corporation
@@ -62,33 +73,23 @@ Relevant Experience: Client-side JavaScript
 ### Personal
 
 My full open source portfolio can be viewed on my
-[Github profile](https://github.com/mattbasta).
-
-#### crass
-
-Crass is a CSS utility library written in both JS and Python. It features a
-parser, rewriter (minifier), and full-fledged optimizer. When optimizing, crass
-performs better than all other known minifiers. Benchmarks in the README.
-
-https://github.com/mattbasta/crass
-
-#### nunjucks
-
-I am a contributor to the nunjucks templating engine by James Long. I've been
-active in development and testing since early 2013, fixing multiple critical
-bugs and implementing optimizations for generated code.
-
-https://github.com/mozilla/nunjucks
+[Github profile](https://github.com/mattbasta). My profile contains both
+work and personal projects, of which I have many. Some of my notable
+projects include Crass, a CSS parser/minifier/optimizer; BreezeBlock, a
+JavaScript templating language similar to JSX; BType, an experimental
+programming language that compiles to asm.js and LLVM IR; and a smattering
+of video games (Legend of Adventure, Hubble Trouble, and more) built for
+both desktop and web.
 
 
 ## Education
 
-* **Kutztown University:** 2010-2012 (graduated, BS in Computer Science)
+* **Kutztown University:** 2010-2012, Comuter Science (graduated)
 * **DeSales University:** 2008-2010, Computer Science
 
 
 ## Other
 
-* Longest Github streak (without cheating): 200+ days
-* Currently operate nearly a dozen parody social media presences
-* I spend time porting a MMO video game that I wrote in college to Golang
+* 1+ year Github streak
+* 12+ parody social media presences
+* I make video games in HTML5, Java, Python, and Go
