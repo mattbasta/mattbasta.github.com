@@ -6,7 +6,8 @@
 
 Performance analysis, JavaScript development and optimization, Python,
 static analysis, compiler design and optimization, parser implementation,
-and style guide purism
+and style guide purism. Kick-ass web developer with proficiency in all
+the latest HTML, CSS, and JS goodness.
 
 
 ### Senior Software Engineer, Box
@@ -23,7 +24,8 @@ increase awareness of performance and software best practices.
 I have also built and deployed two of Box's open source projects.
 My work on Shalam--a novel CSS spriting tool--resulted in the filing
 of a patent. Brainy--a security and performance-centric fork of the Smarty
-templating language--has been included in PHP The Right Way.
+templating language--has been included in
+[PHP The Right Way](http://www.phptherightway.com/#compiled_templates).
 
 Relevant Experience: PHP, JavaScript, Python
 
