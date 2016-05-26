@@ -10,9 +10,18 @@ and style guide purism. Kick-ass web developer with proficiency in all
 the latest HTML, CSS, and JS goodness.
 
 
+### Software Engineer II, Uber
+
+January 2016 - Present
+
+I currently lead front-end development on Uber's Crystal Ball team, where
+we're building software for performing financial forecasting and making
+predictions.
+
+
 ### Senior Software Engineer, Box
 
-January 2014 - Present
+January 2014 - January 2016
 
 At Box I help the Performance Team improve the speed of the Box web
 application. In this role, I've helped to lead the effort to redesign and
@@ -21,10 +30,10 @@ refactor and improve the underlying back-end PHP code. I also have worked
 to help engage teams outside of the Engineering org in an effort to
 increase awareness of performance and software best practices.
 
-I have also built and deployed two of Box's open source projects.
-My work on Shalam--a novel CSS spriting tool--resulted in the filing
-of a patent. Brainy--a security and performance-centric fork of the Smarty
-templating language--has been included in
+I have built and deployed two of Box's open source projects. My work on
+Shalam--a novel CSS spriting tool--resulted in the filing of one of five
+patents that I developed at Box. Brainy--a security and performance-
+centric fork of the Smarty templating language--has been included in
 [PHP The Right Way](http://www.phptherightway.com/#compiled_templates).
 
 Relevant Experience: PHP, JavaScript, Python
