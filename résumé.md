@@ -14,9 +14,10 @@ the latest HTML, CSS, and JS goodness.
 
 January 2016 - Present
 
-I currently lead front-end development on Uber's Crystal Ball team, where
-we're building software for performing financial forecasting and making
-predictions.
+I lead front-end development on Uber's Crystal Ball team, where we built
+software for performing financial forecasting and making predictions. I
+currently work on the EPM team, doing front-end work for financial
+forecasting and budgeting.
 
 
 ### Senior Software Engineer, Box
