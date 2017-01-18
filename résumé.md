@@ -96,7 +96,7 @@ both desktop and web.
 
 ## Education
 
-* **Kutztown University:** 2010-2012, Comuter Science (graduated)
+* **Kutztown University:** 2010-2012, Computer Science (graduated)
 * **DeSales University:** 2008-2010, Computer Science
 
 
