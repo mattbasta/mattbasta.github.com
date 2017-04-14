@@ -19,8 +19,8 @@ software for performing financial forecasting and making predictions. I
 currently work on the Finance Engineering team, leading front-end work
 for financial forecasting, planning, and data management.
 
-At Uber, I also built developer productivity tools and Node libraries
-for IBM's Cognos TM1 software and surrounding technologies.
+I also build developer productivity tools and Node libraries for IBM's
+Cognos TM1 software and surrounding technologies.
 
 
 ### Senior Software Engineer, Box
@@ -88,7 +88,7 @@ Relevant Experience: Client-side JavaScript
 ### Personal
 
 My full open source portfolio can be viewed on my
-[Github profile](https://github.com/mattbasta). My profile contains both
+[GitHub profile](https://github.com/mattbasta). My profile contains both
 work and personal projects, of which I have many. Some of my notable
 projects include Crass, a CSS parser/minifier/optimizer; BreezeBlock, a
 JavaScript templating language similar to JSX; BType, an experimental
@@ -105,6 +105,6 @@ both desktop and web.
 
 ## Other
 
-* 1+ year Github streak
+* 1+ year Github streak (2014-2015)
 * 12+ parody social media presences
-* I make video games in HTML5, Java, Python, and Go
+* I make video games with HTML5, Java, Python, and Go
