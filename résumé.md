@@ -9,10 +9,26 @@ static analysis, compiler design and optimization, parser implementation,
 and style guide purism. Kick-ass web developer with proficiency in all
 the latest HTML, CSS, and JS goodness.
 
+### Software Engineer, Stripe
+
+July 2017 - Present
+
+I work as a front-end engineer on the Connect team.
+
+
+### Founder, Pinecast
+
+2016 - Present
+
+I started [Pinecast](https://pinecast.com) as a simple way to start and
+manage a podcast. Pinecast is [open source](https://github.com/Pinecast)
+and boasts an impressive feature set targeting amateur and semi-
+professional podcasters.
+
 
 ### Software Engineer II, Uber
 
-January 2016 - Present
+January 2016 - May 2017
 
 I led front-end development on Uber's Crystal Ball team, where we built
 software for performing financial forecasting and making predictions. I
