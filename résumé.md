@@ -17,9 +17,10 @@ I started on Connect, building Express and working on the Accounts API.
 In 2018, I moved to the new Connect Account Experience team and helped
 to start the Chicago office. There, I shipped Connect Onboarding for
 Custom and Standard, built productivity tools, and helped grow Stripe's
-hosted Connect offerings by five orders of magnitude. In 2021, I moved
-to be an engineer under the Express Engineering banner, focusing on
-security, forward-looking infrastructure, and driving cross-org efforts.
+hosted Connect offerings by five orders of magnitude. In 2022, I moved
+to be an engineer overseeing MiPS Engineering, overseeing security,
+forward-looking infrastructure like embedded UIs, and driving cross-org
+efforts across Express, Connect, and others.
 
 
 ### Founder, Pinecast
